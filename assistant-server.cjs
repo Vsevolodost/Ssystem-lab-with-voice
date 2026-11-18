@@ -6,16 +6,19 @@ const pages = new Map([
   ['/', 'index.html'], ['/index.html', 'index.html'],
   ['/welcome-ru.wav', 'welcome-ru.wav'], ['/course.html', 'course.html'], ['/Roadmap-SA.html', 'Roadmap-SA.html']
 ]);
+for (const file of ['study.css', 'study-app.js', 'study-data.js', 'study-enrichment.js', 'study-explanations.js', 'study-quizzes.js', 'roadmap-index.js']) pages.set('/'+file, file);
 
 const server = http.createServer(async (request, response) => {
   const pathname = new URL(request.url, 'http://localhost').pathname;
   const theoryAudio = /^\/lesson-audio\/theory-(?:analysis|design|integrations|development|ai|quality|debug|release|operations)-[0-4]\.wav$/.test(pathname);
   const topicAudio = /^\/lesson-audio\/topic-(?:b1|b2|treq|tsmart|b3|b4|bdb|bwin|sql|bnet|bnlab|b5|brest|bapi|bsec|b6|b7|b7b|b8|barch|b9|b10|b11|b12)\.wav$/.test(pathname);
   const lessonAudio = /^\/lesson-audio\/(?:scope|requirements|process|data|api|events|design|baseline|schema|rag|tools|security|evals|ops|capstone)\.wav$/.test(pathname);
-  if (request.method === 'GET' && (pages.has(pathname) || lessonAudio || topicAudio || theoryAudio)) {
+  const skillAudio = /^\/lesson-audio\/skill-[a-z]+(?:-[a-z]+)*\.wav$/.test(pathname);
+  if (request.method === 'GET' && (pages.has(pathname) || lessonAudio || topicAudio || theoryAudio || skillAudio)) {
     try {
       const page = await fs.readFile(path.join(__dirname, pages.get(pathname) || pathname.slice(1)));
-      response.writeHead(200, {'Content-Type': pathname.endsWith('.wav') ? 'audio/wav' : 'text/html; charset=utf-8'});
+      const type = pathname.endsWith('.wav') ? 'audio/wav' : pathname.endsWith('.js') ? 'text/javascript; charset=utf-8' : pathname.endsWith('.css') ? 'text/css; charset=utf-8' : 'text/html; charset=utf-8';
+      response.writeHead(200, {'Content-Type': type, 'X-Content-Type-Options':'nosniff'});
       response.end(page);
     } catch {
       response.writeHead(500).end();
