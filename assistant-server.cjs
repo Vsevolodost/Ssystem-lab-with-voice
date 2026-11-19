@@ -7,6 +7,7 @@ const pages = new Map([
   ['/welcome-ru.wav', 'welcome-ru.wav'], ['/course.html', 'course.html'], ['/Roadmap-SA.html', 'Roadmap-SA.html']
 ]);
 for (const file of ['study.css', 'study-app.js', 'study-data.js', 'study-enrichment.js', 'study-explanations.js', 'study-quizzes.js', 'roadmap-index.js']) pages.set('/'+file, file);
+for (const file of ['study-learning.js','study-theme.js','study-tools-data.js','study-module-checks.js','study-simulations.js','study-features.css']) pages.set('/'+file,file);
 
 const server = http.createServer(async (request, response) => {
   const pathname = new URL(request.url, 'http://localhost').pathname;
